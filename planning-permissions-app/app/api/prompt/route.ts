@@ -26,5 +26,3 @@ export async function POST(request: NextRequest) {
   // Return the response
   return NextResponse.json(result.content);
 }
-
-export default POST;
