@@ -5,7 +5,7 @@ import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { formatDocumentsAsString } from "langchain/util/document";
 
 export async function POST(request: NextRequest) {
-  const loader = new PDFLoader("@/public/pdfs/example-council-docs.pdf", {
+  const loader = new PDFLoader(".\\public\\pdfs\\example-planning-doc.pdf", {
     splitPages: false,
   });
 
@@ -19,8 +19,14 @@ export async function POST(request: NextRequest) {
   // Prompt Claude 2 using Langchain
   const promptTemplate = PromptTemplate.fromTemplate(
     `Human: <doc>{document}</doc> 
-    Please summarise the rules around planning permissions from this UK council government document.
-    Assistant: Sure, in order to get planning permission you will
+    I want to extend my garage. Do I need planning permission based on the document?
+
+    Skip the preamble and reply to me in the most clear and concise way.
+
+    Based on the limitations you can see and exceptions for planning permission please ask me a series of questions each on a new line to
+    qualify if I truly need planning permission.
+
+    Assistant: 
     `
   );
 
