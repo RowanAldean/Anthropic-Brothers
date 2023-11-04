@@ -1,13 +1,19 @@
 import { PromptTemplate } from "langchain/prompts";
 import { NextRequest, NextResponse } from "next/server";
-import { ChatAnthropic } from "langchain/chat_models/anthropic"; // Assuming you have installed the Langchain package
+import { ChatAnthropic } from "langchain/chat_models/anthropic";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { formatDocumentsAsString } from "langchain/util/document";
 
 export async function POST(request: NextRequest) {
+  const loader = new PDFLoader("@/public/pdfs/example-council-docs.pdf", {
+    splitPages: false,
+  });
+
   // Create an instance of Langchain with your Anthropi API key
   const model = new ChatAnthropic({
     // temperature: 0,
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
-    modelName: 'claude-2'
+    modelName: "claude-2",
   });
 
   // Prompt Claude 2 using Langchain
@@ -20,7 +26,11 @@ export async function POST(request: NextRequest) {
 
   const chain = promptTemplate.pipe(model);
 
-  const result = await chain.invoke({document: `Hi i'm the council`});
+  const docs = await loader.load();
+
+  const docsString = formatDocumentsAsString(docs);
+
+  const result = await chain.invoke({ document: docsString });
 
   console.log(result);
   // Return the response
