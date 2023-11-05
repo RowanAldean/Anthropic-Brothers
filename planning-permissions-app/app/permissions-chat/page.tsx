@@ -38,9 +38,7 @@ export default function Home() {
     callBackend();
   }, []);
 
-  function submitMessage(
-    event: MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void {
+  function submitMessage(): void {
     const inputElement = document.querySelector(
       'input[type="text"]'
     ) as HTMLInputElement;
