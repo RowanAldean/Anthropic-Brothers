@@ -11,22 +11,7 @@ export default function Home() {
   const router = useRouter();
 
   async function callBackend(): Promise<void> {
-    const backendResponse = await fetch("/api/prompt", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ usersProject }),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        setPromptOutput(result);
-        router.push("/permissions-chat");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    router.push(`/permissions-chat?message=${encodeURIComponent(usersProject)}`);
   }
 
   return (
@@ -53,7 +38,7 @@ export default function Home() {
             type="text"
             placeholder="I want to extend my 3-bedroom home in Surrey by..."
             className=""
-            onChange={(e) => setUsersProject({ ...usersProject, description: e.target.value })}
+            onChange={(e) => setUsersProject(e.target.value)}
           ></Input>
           <Button onClick={callBackend} className="w-fit self-center">
             Use AI 🪄

@@ -23,17 +23,26 @@ export async function POST(request: NextRequest) {
 
   const datadump = await queryDatabaseForPDFs();
 
+  const usersProjectJson = await request.json();
+  const usersProjectMessage = usersProjectJson.messageQuery;
+
+  // TODO: The chaining needs to be done
+
   // Prompt Claude 2 using Langchain
   const promptTemplate = PromptTemplate.fromTemplate(
     `Human: <council-rules-collection>{datasource}</council-rules-collection> 
-    I want to extend my garage. Do I need planning permission based on the document?
+    
+    You are an advisor on UK planning permissions for construction projects. You have been provided with a large datasource of rules for each council.
+    A client of yours has asked you about the following project they plan on undertaking:
 
-    Skip the preamble and reply to me in the most clear and concise way.
+    <potential-project>{userMessage}</potential-project>
 
-    Based on the limitations you can see and exceptions for planning permission please ask me a series of questions each on a new line to
-    qualify if I truly need planning permission.
+    Considering what council they fall within based on the area of their home, you have been asked to provide a series of questions
+    to qualify if they may need planning permission.
+    
+    Skip the preamble and reply to them in the most clear and concise way, using the council rules to establish if they even need permission in the least number of questions.
 
-    Assistant: 
+    Assistant: For the project request {userMessage} I'll need to know...
     `
   );
 
@@ -41,9 +50,9 @@ export async function POST(request: NextRequest) {
 
   const stringDatadump = datadump?.map(doc => doc.content).join('') || ''; //TODO: Have some visibility for if this is null? Will Claude realise?
 
-  const result = await chain.invoke({ datasource: stringDatadump });
+  const result = await chain.invoke({ datasource: stringDatadump, userMessage: usersProjectMessage });
 
-  console.log(result);
+  // console.log(result);
   // Return the response
-  return NextResponse.json("result.content");
+  return NextResponse.json(result.content);
 }
