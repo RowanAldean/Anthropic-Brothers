@@ -52,7 +52,7 @@ export default function Home() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const initalMessage = urlParams.get("message");
+    const initalMessage = urlParams.get("message") || '';
     callBackend(initalMessage);
   }, []);
 
