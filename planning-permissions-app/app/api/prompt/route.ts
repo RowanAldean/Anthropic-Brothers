@@ -9,7 +9,7 @@ import { formatDocumentsAsString } from "langchain/util/document";
 import { NextRequest, NextResponse } from "next/server";
 import { queryDatabaseForPDFs } from "@/lib/database";
 
-export const runtime = 'edge'
+// export const runtime = 'edge'
 
 export async function POST(request: NextRequest) {
   // TOOD: Delete this when no longer loading from static files

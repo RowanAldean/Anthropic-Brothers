@@ -11,10 +11,10 @@ export default function Home() {
   const [claudeResponse, setClaudeResponse] = useState<string[]>([]);
   const [userMessages, setUserMessages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [messageQuery, setMessageQuery ] = useState<string>("");
 
   async function callBackend(): Promise<void> {
-    const urlParams = new URLSearchParams(window.location.search);
-    const messageQuery = urlParams.get("message");
+
     console.log(`MESSAGE QUERY IS: ${messageQuery}`);
     const backendResponse = await fetch("/api/prompt", {
       method: "POST",
@@ -34,6 +34,9 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initalMessage = urlParams.get("message") ;
+    setMessageQuery(initalMessage ? initalMessage:"");
     callBackend();
   }, []);
 
@@ -63,6 +66,23 @@ export default function Home() {
             Do you even need permissions?
           </div>
           <div id="chat-messages" className="flex flex-col">
+            <div
+              className="pr-2 flex flex-row-reverse self-end w-fit m-3 rounded-md text-black text-lg p-2"
+            >
+              <div className="h-10 w-10 rounded-full mr-2">
+                <Avatar>
+                  <AvatarImage src="https://github.com/identicons/test.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="flex flex-col gap-2">
+                <i className="mr-3 text-right">You</i>
+                <div className="pl-2 w-fit mt-0 m-3 rounded-md text-white bg-accent text-lg p-2">
+                  {messageQuery}
+                </div>
+              </div>{" "}
+            </div>
+
             {isLoading ? (
               <div className="flex px-2 items-center mb-4">
                 <div className="h-10 w-10 rounded-full mr-2">
