@@ -42,7 +42,7 @@ export default function Home() {
         id="logo"
         className="flex flex-col gap-2 self-center md:self-start md:pl-[10px] max-w-5xl w-fill md:w-fit text-2xl md:text-4xl text-accent font-extrabold items-start text-center lg:flex"
       >
-        Buildsmart
+        <a href="/">Buildsmart</a>
       </div>
       <div id="chat-window-container" className="flex flex-col w-full h-full">
         <div id="chat-window" className="flex flex-col self-center mx-1 my-5 md:my-10 md:w-[50%] h-auto bg-accent/20 rounded-md">
