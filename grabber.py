@@ -29,19 +29,19 @@ driver = webdriver.Firefox(options=options)
 
 driver.get('https://publicaccess.wycombe.gov.uk/idoxpa-web/search.do?action=simple&searchType=Application')
 sleep(5)
-driver.find_element(By.XPATH, '//input[@id="simpleSearchString"]').send_keys('terrace')
+driver.find_element(By.XPATH, '//input[@id="simpleSearchString"]').send_keys('patio')
 driver.find_element(By.XPATH, '//input[@class="button primary recaptcha-submit"]').click()
 sleep(5)
 links = []
 
-for _ in range(15):
-    try:
-        driver.find_element(By.XPATH, '//a[text()="Next"]').click()
-        sleep(3)
-    except:
-        break
+# for _ in range(15):
+#     try:
+#         driver.find_element(By.XPATH, '//a[text()="Next"]').click()
+#         sleep(3)
+#     except:
+#         break
 
-for _ in range(15):
+for _ in range(25):
     try:
         driver.find_element(By.XPATH, '//a[text()="Next"]').click()
         sleep(5)
@@ -54,15 +54,24 @@ for link in links:
     sleep(5)
     case_ref = driver.title.split('|')[0].strip().replace('/', '-')
     case_status = driver.find_element(By.XPATH, '//span[@class="caseDetailsStatus"]').text.replace(' ', '-')
+
+    case_dir = f'./docs/{case_ref}'
+    os.mkdir(case_dir)
+    meta = {'status': case_status, 'link': link}
+    
+    for item in driver.find_element(By.XPATH, '//table[@id="simpleDetailsTable"]').find_elements(By.XPATH, ".//tr"):
+        value = item.find_element(By.XPATH, './td').text.strip()
+        key = item.find_element(By.XPATH, './th').text.strip().replace(' ', '_').lower()
+        meta[key] = value
+
+    with open(f'{case_dir}/meta.txt', 'w') as f:
+        for key, value in meta.items():
+            f.write(f'{key}: {value}\n')
+
     try:
         driver.find_element(By.XPATH, '//a[@id="tab_documents"]').click()
     except:
         continue  # no documents tab
-
-    case_dir = f'./docs/{case_ref}'
-    os.mkdir(case_dir)
-    with open(f'{case_dir}/meta.txt', 'w') as f:
-        f.write(f'status: {case_status}\nlink: {link}\n')
 
     for table_row in driver.find_elements(By.XPATH, '//table[@id="Documents"]/tbody/tr'):
         if any_in(['Consultee Comment', 'Application Form', 'Supporting Documents', 'Background Papers', 'Consultations'], table_row.text):
