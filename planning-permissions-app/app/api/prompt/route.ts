@@ -6,6 +6,7 @@ import { SimpleSequentialChain, LLMChain } from "langchain/chains";
 import { NextRequest, NextResponse } from "next/server";
 import { queryDatabaseForPDFs } from "@/lib/database";
 
+
 export async function POST(request: NextRequest) {
 
   // Create an instance of Langchain with your Anthropi API key

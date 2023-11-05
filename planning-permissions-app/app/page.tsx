@@ -5,8 +5,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export const runtime = 'edge'
-
 export default function Home() {
   const [promptOutput, setPromptOutput] = useState<string>("");
   const [usersProject, setUsersProject] = useState<any>({});
