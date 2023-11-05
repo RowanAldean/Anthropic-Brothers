@@ -58,13 +58,13 @@ export default function Home() {
         <a href="/">Buildsmart</a>
       </div>
       <div id="chat-window-container" className="flex flex-col w-full h-full">
+      <div className="font-extrabold flex w-full pt-4 self-start justify-center text-center text-lg">
+        Let's see if you need permissions...
+          </div>
         <div
           id="chat-window"
-          className="flex flex-col self-center mx-1 my-5 md:my-10 md:w-[50%] h-auto bg-accent/20 rounded-md"
+          className="flex flex-col self-center mx-1 my-5 md:my-10 md:mt-2 md:w-[50%] h-auto bg-accent/20 rounded-md"
         >
-          <div className="font-extrabold flex w-full py-4 self-start justify-center text-center text-lg">
-            Do you even need permissions?
-          </div>
           <div id="chat-messages" className="flex flex-col">
             <div
               className="pr-2 flex flex-row-reverse self-end w-fit m-3 rounded-md text-black text-lg p-2"

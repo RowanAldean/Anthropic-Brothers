@@ -40,11 +40,11 @@ export default function Home() {
             className=""
             onChange={(e) => setUsersProject(e.target.value)}
           ></Input>
-          <Button onClick={callBackend} variant="secondary" className="w-fit self-center">
+          <Button onClick={callBackend} className="w-fit self-center">
             Use AI 🪄
           </Button>
         </div>
-        {/* <div
+        <div
           id="cta"
           className="text-center text-md flex flex-col mt-10 items-center gap-2"
         >
@@ -52,7 +52,7 @@ export default function Home() {
           <Button variant={"secondary"} className="w-fit">
             View councils
           </Button>
-        </div> */}
+        </div>
       </div>
       <div className="mt-5">{promptOutput}</div>
     </main>
