@@ -9,13 +9,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [promptOutput, setPromptOutput] = useState<string>("");
+  const [topTips, setTopTips] = useState<string[]>([]);
+  const [redFlags, setRedFlags] = useState<string[]>([]);
+
   const [usersProject, setUsersProject] = useState<any>({});
   const router = useRouter();
 
   async function callBackend(promptMessage: string): Promise<void> {
     console.log(`MESSAGE QUERY IS: ${promptMessage}`);
-    const backendResponse = await fetch("/api/prompt", {
+    const backendResponse = await fetch("/api/prompt-advice", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,11 +26,28 @@ export default function Home() {
     })
       .then((response) => response.json())
       .then((result) => {
-        setPromptOutput(result);
+        const parsedResult = parseClaudeResponse(result);
+        const topTips = showAsList(parsedResult[0]);
+        const redFlags = showAsList(parsedResult[1]);
+        setTopTips(topTips);
+        setRedFlags(redFlags);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+  }
+
+  function parseClaudeResponse(result: string) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(result, "text/xml");
+    const topTips = Array.from(xmlDoc.getElementsByTagName("top-tips")).map((node) => node.textContent).join("");
+    const redFlags = Array.from(xmlDoc.getElementsByTagName("red-flags")).map((node) => node.textContent).join("");
+    return [topTips, redFlags];
+  }
+
+  function showAsList(result: string){
+    const list = result.split('\n').map(item => item.trim().replace('-', ''));
+    return list;
   }
 
   useEffect(() => {
@@ -55,11 +74,15 @@ export default function Home() {
         >
           <div className="flex flex-col items-center md:w-[50%] mx-5 justify-center text-center bg-accent/20 rounded-md p-5">
             <div className="md:text-2xl font-semibold">Best Practices 🏅</div>
-            <li className="text-xl">{promptOutput}</li>
+            {topTips.map((tip, index) => (
+              <li key={index} className="text-xl">{tip}</li>
+            ))}
           </div>
           <div className="flex flex-col items-center md:w-[50%] justify-center text-center bg-accent/20 rounded-md p-5">
             <div className="md:text-2xl font-semibold">Red Flags 🚩</div>
-            <li className="text-xl">Hello, test flag</li>
+            {redFlags.map((flag, index) => (
+              <li key={index} className="text-xl">{flag}</li>
+            ))}
           </div>
         </div>
         <div className="self-center">
