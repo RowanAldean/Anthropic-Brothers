@@ -16,8 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${workSans.className} h-full`}>
-        {children}
+      <body className={`${workSans.className} h-screen flex flex-col`}>
+        <div className="flex-1">
+          {children}
+        </div>
+        
         <footer className="relative bottom-2 self-center text-center">
           Built with ❤️ in London, UK 🇬🇧. Powered by{" "}
           <a href="https://www.anthropic.com/product">Anthropic</a>
