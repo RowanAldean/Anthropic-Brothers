@@ -63,6 +63,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.7.2"
+    "@cloudflare/next-on-pages": "^1.7.2",
+    "mongodb": "^5.9.1"
   }
 }

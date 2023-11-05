@@ -7,6 +7,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [promptOutput, setPromptOutput] = useState<string>("");
+  const [usersProject, setUsersProject] = useState<any>({});
   const router = useRouter();
 
   async function callBackend(): Promise<void> {
@@ -15,7 +16,7 @@ export default function Home() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ document: "Hi i'm the council" }),
+      body: JSON.stringify({ usersProject }),
     })
       .then((response) => response.json())
       .then((result) => {
@@ -52,6 +53,7 @@ export default function Home() {
             type="text"
             placeholder="I want to extend my 3-bedroom home in Surrey by..."
             className=""
+            onChange={(e) => setUsersProject({ ...usersProject, description: e.target.value })}
           ></Input>
           <Button onClick={callBackend} className="w-fit self-center">
             Use AI 🪄
