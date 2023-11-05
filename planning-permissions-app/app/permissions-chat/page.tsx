@@ -6,25 +6,45 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LucideArrowBigRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
+type Message = {
+  role: "assistant" | "human";
+  text: string;
+};
+
 export default function Home() {
   const [promptOutput, setPromptOutput] = useState<string>("");
-  const [claudeResponse, setClaudeResponse] = useState<string[]>([]);
+  const [claudeResponse, setClaudeResponse] = useState<Message[]>([
+    { role: "assistant", text: "How big is the conservatory going to be?" },
+    {
+      role: "assistant",
+      text: "You have qualified for planning for planning permission",
+    },
+  ]);
+
+  const [messageIndex, setMessageIndex] = useState(0);
+
   const [userMessages, setUserMessages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [messageQuery, setMessageQuery ] = useState<string>("");
+  const [messageQuery, setMessageQuery] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
 
-  async function callBackend(promptMessage: string): Promise<void> {
-
-    console.log(`MESSAGE QUERY IS: ${promptMessage}`);
+  async function callBackend(messages: Message[]): Promise<void> {
+    console.log(`MESSAGES ARE: ${JSON.stringify(messages)}`);
+    //setMessageIndex(messageIndex+1);
+    setIsLoading(true);
     const backendResponse = await fetch("/api/prompt", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ promptMessage }),
+      body: JSON.stringify({ messages }),
     })
       .then((response) => response.json())
       .then((result) => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { role: "assistant", text: result },
+        ]);
         setClaudeResponse([...claudeResponse, result]);
         setIsLoading(false);
       })
@@ -35,19 +55,31 @@ export default function Home() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const initalMessage = urlParams.get("message") ;
-    setMessageQuery(initalMessage ? initalMessage:"");
-    callBackend(messageQuery);
+    const initalMessage = urlParams.get("message");
+    setMessages([
+      ...messages,
+      { role: "human", text: initalMessage ? initalMessage : "" },
+    ]);
+    setMessageQuery(initalMessage ? initalMessage : "");
+    
   }, []);
+
+  useEffect(() => {
+    if (messages.length > 0 && messages[messages.length - 1].role === "human") {
+      callBackend(messages);
+    }
+    
+    
+  }, [messages]);
 
   function submitMessage(): void {
     const inputElement = document.querySelector(
       'input[type="text"]'
     ) as HTMLInputElement;
     const userInput = inputElement.value;
+    setMessages([...messages, { role: "human", text: userInput }]);
     setUserMessages([...userMessages, userInput]);
     inputElement.value = "";
-    callBackend(userInput);
   }
 
   return (
@@ -59,15 +91,15 @@ export default function Home() {
         <a href="/">Buildsmart</a>
       </div>
       <div id="chat-window-container" className="flex flex-col w-full h-full">
-      <div className="font-extrabold flex w-full pt-4 self-start justify-center text-center text-lg">
-        Let's see if you need permissions...
-          </div>
+        <div className="font-extrabold flex w-full pt-4 self-start justify-center text-center text-lg">
+          Let's see if you need permissions...
+        </div>
         <div
           id="chat-window"
           className="flex flex-col self-center mx-1 my-5 md:my-10 md:mt-2 md:w-[50%] h-auto bg-accent/20 rounded-md"
         >
           <div id="chat-messages" className="flex flex-col">
-            <div
+            {/* <div
               className="pr-2 flex flex-row-reverse self-end w-fit m-3 rounded-md text-black text-lg p-2"
             >
               <div className="h-10 w-10 rounded-full mr-2">
@@ -82,59 +114,72 @@ export default function Home() {
                   {messageQuery}
                 </div>
               </div>{" "}
-            </div>
+            </div> */}
+            
+            <>
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex px-2 ${
+                    message.role === "human" ? "flex-row-reverse self-end" : ""
+                  }`}
+                >
+                  <div className="h-10 w-10 rounded-full mr-2">
+                    <Avatar>
+                      {message.role === "human" && (
+                        <AvatarImage src="https://github.com/identicons/test.png" />
+                      )}
+                      {message.role === "assistant" && (
+                        <AvatarImage src="https://avatars.githubusercontent.com/u/76263028?s=200&v=4" />
+                      )}
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {message.role === "human" && (
+                      <i className="mr-3 text-right">You</i>
+                    )}
+                    {message.role === "assistant" && (
+                      <i className="ml-3">Buildsmart AI (Claude)</i>
+                    )}
 
-            {isLoading ? (
-              <div className="flex px-2 items-center mb-4">
+                    <div
+                      className={`pl-2 w-fit mt-0 m-3 rounded-md text-${
+                        message.role === "human" ? "white bg-accent" : "black"
+                      } text-lg p-2`}
+                    >
+                      {message.text}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div
+                className={`flex px-2`}
+              >
                 <div className="h-10 w-10 rounded-full mr-2">
-                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <Avatar>
+                    
+                    
+                    <AvatarImage src="https://avatars.githubusercontent.com/u/76263028?s=200&v=4" />
+                    
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <i className="ml-3">Buildsmart AI (Claude) is typing...</i>
-                  {/* <div className="pl-2 bg-white w-fit mt-0 m-3 rounded-md text-black text-lg p-2">
-                    <Skeleton className="h-8 w-full" />
-                  </div> */}
+               
+                    <i className="ml-3">Buildsmart AI (Claude)</i>
+  
+
+                  <div
+                    className={`pl-2 w-fit mt-0 m-3 rounded-md text-black text-lg p-2`}
+                  >
+                    {"Buildsmart is thinking..."}
+                  </div>
                 </div>
               </div>
-            ) : (
-              <>
-                {claudeResponse.map((response, index) => (
-                  <div key={index} className="flex px-2">
-                    <div className="h-10 w-10 rounded-full mr-2">
-                      <Avatar>
-                        <AvatarImage src="https://avatars.githubusercontent.com/u/76263028?s=200&v=4" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <i className="ml-3">Buildsmart AI (Claude)</i>
-                      <div className="pl-2 bg-white w-fit mt-0 m-3 rounded-md text-black text-lg p-2">
-                        {response}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {userMessages.map((message, index) => (
-                  <div
-                    key={index}
-                    className="pr-2 flex flex-row-reverse self-end w-fit m-3 rounded-md text-black text-lg p-2"
-                  >
-                    <div className="h-10 w-10 rounded-full mr-2">
-                      <Avatar>
-                        <AvatarImage src="https://github.com/identicons/test.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <i className="mr-3 text-right">You</i>
-                      <div className="pl-2 w-fit mt-0 m-3 rounded-md text-white bg-accent text-lg p-2">
-                        {message}
-                      </div>
-                    </div>{" "}
-                  </div>
-                ))}
-              </>
-            )}
+              )}
+            </>
           </div>
           <hr></hr>
           <div
