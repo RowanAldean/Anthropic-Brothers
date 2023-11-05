@@ -6,18 +6,55 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LucideArrowBigRight, LucideMousePointer2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [promptOutput, setPromptOutput] = useState<string>("");
+  const [topTips, setTopTips] = useState<string[]>([]);
+  const [redFlags, setRedFlags] = useState<string[]>([]);
+
   const [usersProject, setUsersProject] = useState<any>({});
   const router = useRouter();
 
-  async function callBackend(): Promise<void> {
-    router.push(
-      `/permissions-chat?message=${encodeURIComponent(usersProject)}`
-    );
+  async function callBackend(promptMessage: string): Promise<void> {
+    console.log(`MESSAGE QUERY IS: ${promptMessage}`);
+    const backendResponse = await fetch("/api/prompt-advice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ promptMessage }),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        const parsedResult = parseClaudeResponse(result);
+        const topTips = showAsList(parsedResult[0]);
+        const redFlags = showAsList(parsedResult[1]);
+        setTopTips(topTips);
+        setRedFlags(redFlags);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
+
+  function parseClaudeResponse(result: string) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(result, "text/xml");
+    const topTips = Array.from(xmlDoc.getElementsByTagName("top-tips")).map((node) => node.textContent).join("");
+    const redFlags = Array.from(xmlDoc.getElementsByTagName("red-flags")).map((node) => node.textContent).join("");
+    return [topTips, redFlags];
+  }
+
+  function showAsList(result: string){
+    const list = result.split('\n').map(item => item.trim().replace('-', ''));
+    return list;
+  }
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initalMessage = urlParams.get("message") || '';
+    callBackend(initalMessage);
+  }, []);
 
   return (
     <main className="flex h-full flex-col items-center justify-between pt-4 w-fill">
@@ -37,19 +74,26 @@ export default function Home() {
         >
           <div className="flex flex-col items-center md:w-[50%] mx-5 justify-center text-center bg-accent/20 rounded-md p-5">
             <div className="md:text-2xl font-semibold">Best Practices 🏅</div>
-            <li className="text-xl">
-                Hello, test best
-            </li>
+            {topTips.map((tip, index) => (
+              <li key={index} className="text-xl">{tip}</li>
+            ))}
           </div>
           <div className="flex flex-col items-center md:w-[50%] justify-center text-center bg-accent/20 rounded-md p-5">
             <div className="md:text-2xl font-semibold">Red Flags 🚩</div>
-            <li className="text-xl">
-                Hello, test flag
-            </li>
+            {redFlags.map((flag, index) => (
+              <li key={index} className="text-xl">{flag}</li>
+            ))}
           </div>
         </div>
         <div className="self-center">
-            <Button className="text-lg gap-2" onClick={()=>{router.push('/guidance')}}>Get guidance<LucideMousePointer2></LucideMousePointer2></Button>
+          <Button
+            className="text-lg gap-2"
+            onClick={() => {
+              router.push("/guidance");
+            }}
+          >
+            Get guidance<LucideMousePointer2></LucideMousePointer2>
+          </Button>
         </div>
       </div>
     </main>
