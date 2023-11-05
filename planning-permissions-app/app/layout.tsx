@@ -1,22 +1,28 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import "./globals.css";
+import type { Metadata } from "next";
+import { Work_Sans } from "next/font/google";
 
-const inter = Inter({ subsets: ['latin'] })
+const workSans = Work_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Permission Plannie',
-  description: 'Gain clarity on the UK planning permission process',
-}
+  title: "Buildsmart",
+  description: "The place for everything related to planning permissions.",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${workSans.className} max-h-[100dvh] h-[100dvh]`}>
+        {children}
+        <footer className="relative bottom-2 self-center text-center">
+          Built with ❤️ in London, UK 🇬🇧. Powered by{" "}
+          <a href="https://www.anthropic.com/product">Anthropic</a>
+        </footer>
+      </body>
     </html>
-  )
+  );
 }
