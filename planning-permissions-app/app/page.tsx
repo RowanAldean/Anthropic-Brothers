@@ -2,10 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
   const [promptOutput, setPromptOutput] = useState<string>("");
+  const router = useRouter();
 
   async function callBackend(): Promise<void> {
     const backendResponse = await fetch("/api/prompt", {
@@ -19,6 +21,7 @@ export default function Home() {
       .then((result) => {
         console.log(result);
         setPromptOutput(result);
+        router.push("/permissions-chat");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -41,8 +44,8 @@ export default function Home() {
       </div>
       <div className="self-center flex flex-col gap-2 w-[90%] md:w-[40%] text-center">
         <div id="description" className="text-center text-md">
-          We use AI to reduce effort when thinking about planning permission across
-          the UK
+          We use AI to reduce effort when thinking about planning permission
+          across the UK
         </div>
         <div className="flex gap-2">
           <Input
@@ -54,9 +57,14 @@ export default function Home() {
             Use AI 🪄
           </Button>
         </div>
-        <div id="cta" className="text-center text-md flex flex-col mt-10 items-center gap-2">
+        <div
+          id="cta"
+          className="text-center text-md flex flex-col mt-10 items-center gap-2"
+        >
           See which councils we can support with here ⬇️
-          <Button variant={"secondary"} className="w-fit">View councils</Button>
+          <Button variant={"secondary"} className="w-fit">
+            View councils
+          </Button>
         </div>
       </div>
       <div className="mt-5">{promptOutput}</div>
