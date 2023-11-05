@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LucideArrowBigRight } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -48,7 +47,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex h-[95dvh] flex-col items-center justify-between pt-4 w-fill">
+    <main className="flex h-full flex-col items-center justify-between pt-4 w-fill">
       <div
         id="logo"
         className="flex flex-col gap-2 self-center md:self-start md:pl-[10px] max-w-5xl w-fill md:w-fit text-2xl md:text-4xl text-accent font-extrabold items-start text-center lg:flex"

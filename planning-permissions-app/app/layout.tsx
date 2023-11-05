@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${workSans.className} max-h-[100dvh] h-[100dvh]`}>
+      <body className={`${workSans.className} h-full`}>
         {children}
         <footer className="relative bottom-2 self-center text-center">
           Built with ❤️ in London, UK 🇬🇧. Powered by{" "}
