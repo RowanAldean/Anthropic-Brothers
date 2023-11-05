@@ -13,15 +13,15 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [messageQuery, setMessageQuery ] = useState<string>("");
 
-  async function callBackend(): Promise<void> {
+  async function callBackend(promptMessage: string): Promise<void> {
 
-    console.log(`MESSAGE QUERY IS: ${messageQuery}`);
+    console.log(`MESSAGE QUERY IS: ${promptMessage}`);
     const backendResponse = await fetch("/api/prompt", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messageQuery }),
+      body: JSON.stringify({ promptMessage }),
     })
       .then((response) => response.json())
       .then((result) => {
@@ -37,7 +37,7 @@ export default function Home() {
     const urlParams = new URLSearchParams(window.location.search);
     const initalMessage = urlParams.get("message") ;
     setMessageQuery(initalMessage ? initalMessage:"");
-    callBackend();
+    callBackend(messageQuery);
   }, []);
 
   function submitMessage(): void {
@@ -47,6 +47,7 @@ export default function Home() {
     const userInput = inputElement.value;
     setUserMessages([...userMessages, userInput]);
     inputElement.value = "";
+    callBackend(userInput);
   }
 
   return (
