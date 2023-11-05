@@ -13,15 +13,15 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [messageQuery, setMessageQuery ] = useState<string>("");
 
-  async function callBackend(): Promise<void> {
+  async function callBackend(promptMessage: string): Promise<void> {
 
-    console.log(`MESSAGE QUERY IS: ${messageQuery}`);
+    console.log(`MESSAGE QUERY IS: ${promptMessage}`);
     const backendResponse = await fetch("/api/prompt", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messageQuery }),
+      body: JSON.stringify({ promptMessage }),
     })
       .then((response) => response.json())
       .then((result) => {
@@ -37,7 +37,7 @@ export default function Home() {
     const urlParams = new URLSearchParams(window.location.search);
     const initalMessage = urlParams.get("message") ;
     setMessageQuery(initalMessage ? initalMessage:"");
-    callBackend();
+    callBackend(messageQuery);
   }, []);
 
   function submitMessage(): void {
@@ -47,6 +47,7 @@ export default function Home() {
     const userInput = inputElement.value;
     setUserMessages([...userMessages, userInput]);
     inputElement.value = "";
+    callBackend(userInput);
   }
 
   return (
@@ -58,13 +59,13 @@ export default function Home() {
         <a href="/">Buildsmart</a>
       </div>
       <div id="chat-window-container" className="flex flex-col w-full h-full">
+      <div className="font-extrabold flex w-full pt-4 self-start justify-center text-center text-lg">
+        Let's see if you need permissions...
+          </div>
         <div
           id="chat-window"
-          className="flex flex-col self-center mx-1 my-5 md:my-10 md:w-[50%] h-auto bg-accent/20 rounded-md"
+          className="flex flex-col self-center mx-1 my-5 md:my-10 md:mt-2 md:w-[50%] h-auto bg-accent/20 rounded-md"
         >
-          <div className="font-extrabold flex w-full py-4 self-start justify-center text-center text-lg">
-            Do you even need permissions?
-          </div>
           <div id="chat-messages" className="flex flex-col">
             <div
               className="pr-2 flex flex-row-reverse self-end w-fit m-3 rounded-md text-black text-lg p-2"
