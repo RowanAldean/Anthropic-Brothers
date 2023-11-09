@@ -1,7 +1,7 @@
 # Buildsmart
 [Buildsmart](https://buildsmart.vercel.app/) is a product developed as part of the first [Anthropic London Hackathon](https://anthropiclondon.devpost.com/). 
 
-We feed all relevant council documents around planning permissions for construction projects into the large context window provided by Claude 3 (Anthropic's LLM), before orchestrating well designed prompts with LangChain to provide a user friendly experience via a Next.js application.
+We feed all relevant council documents around planning permissions for construction projects into the large context window provided by Claude 2 (Anthropic's LLM), before orchestrating well designed prompts with LangChain to provide a user friendly experience via a Next.js application.
 
 ## What is Buildsmart?
 [Buildsmart AI](https://buildsmart.vercel.app/) helps planning projects in 3 ways.
